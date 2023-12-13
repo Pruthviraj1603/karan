@@ -1,0 +1,164 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <regex>
+
+using namespace std;
+
+struct Entry {
+  string date;
+  string title;
+  string content;
+};
+
+vector<Entry> entries;
+
+bool isValidDateFormat(const string& date) {
+  regex datePattern("\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])");
+
+  if (!regex_match(date, datePattern)) {
+    cout << "Invalid date format! Please enter a valid date in YYYY-MM-DD format." << endl;
+    return false;
+  }
+
+  int year = stoi(date.substr(0, 4));
+  int month = stoi(date.substr(5, 2));
+  int day = stoi(date.substr(8, 2));
+
+  if (year < 1900 || year > 2100) {
+    cout << "Invalid year! Please enter a year between 1900 and 2100." << endl;
+    return false;
+  }
+
+  if (month < 1 || month > 12) {
+    cout << "Invalid month! Please enter a month between 01 and 12." << endl;
+    return false;
+  }
+
+  if (day < 1 || day > 31) {
+    cout << "Invalid day! Please enter a day between 01 and 31." << endl;
+    return false;
+  }
+
+  return true;
+}
+
+void addEntry() {
+  Entry entry;
+  do {
+    cout << "Enter date (YYYY-MM-DD): ";
+    cin >> entry.date;
+  } while (!isValidDateFormat(entry.date));
+
+  cout << "Enter title: ";
+  cin >> entry.title;
+  cout << "Enter content: ";
+  cin.ignore();
+  getline(cin, entry.content);
+  entries.push_back(entry);
+
+  cout << "Entry added successfully!" << endl;
+}
+
+void editEntry() {
+  if (entries.empty()) {
+    cout << "No entries to edit." << endl;
+    return;
+  }
+
+  int index;
+  cout << "Enter the index of the entry to edit (0 to " << entries.size() - 1 << "): ";
+  cin >> index;
+
+  if (index < 0 || index >= entries.size()) {
+    cout << "Invalid index." << endl;
+    return;
+  }
+
+  Entry& entry = entries[index];
+  cout << "Editing entry at index " << index << ":" << endl;
+
+  do {
+    cout << "Enter new date (YYYY-MM-DD): ";
+    cin >> entry.date;
+  } while (!isValidDateFormat(entry.date));
+
+  cout << "Enter new title: ";
+  cin >> entry.title;
+  cout << "Enter new content: ";
+  cin.ignore();
+  getline(cin, entry.content);
+
+  cout << "Entry edited successfully!" << endl;
+}
+
+void deleteEntry() {
+  if (entries.empty()) {
+    cout << "No entries to delete." << endl;
+    return;
+  }
+
+  int index;
+  cout << "Enter the index of the entry to delete (0 to " << entries.size() - 1 << "): ";
+  cin >> index;
+
+  if (index < 0 || index >= entries.size()) {
+    cout << "Invalid index." << endl;
+    return;
+  }
+
+  entries.erase(entries.begin() + index);
+  cout << "Entry deleted successfully!" << endl;
+}
+
+void listEntries() {
+  if (entries.empty()) {
+    cout << "No entries to display." << endl;
+    return;
+  }
+
+  cout << "List of entries:" << endl;
+  for (int i = 0; i < entries.size(); ++i) {
+    cout << "Index: " << i << endl;
+    cout << "Date: " << entries[i].date << endl;
+    cout << "Title: " << entries[i].title << endl;
+    cout << "Content: " << entries[i].content << endl;
+    cout << "------------------------" << endl;
+  }
+}
+
+int main() {
+  int choice;
+  do {
+    cout << "Welcome to your diary!" << endl;
+    cout << "1. Add entry" << endl;
+    cout << "2. Edit entry" << endl;
+    cout << "3. Delete entry" << endl;
+    cout << "4. List entries" << endl;
+    cout << "5. Exit" << endl;
+    cout << "Enter your choice: ";
+    cin >> choice;
+
+    switch (choice) {
+      case 1:
+        addEntry();
+        break;
+      case 2:
+        editEntry();
+        break;
+      case 3:
+        deleteEntry();
+        break;
+      case 4:
+        listEntries();
+        break;
+      case 5:
+        cout << "Exiting the diary application. Goodbye!" << endl;
+        break;
+      default:
+        cout << "Invalid choice. Please enter a number between 1 and 5." << endl;
+    }
+  } while (choice != 5);
+
+  return 0;
+}
